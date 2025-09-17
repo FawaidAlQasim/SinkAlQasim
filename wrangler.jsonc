@@ -23,7 +23,7 @@
   ],
   "kv_namespaces": [
     {
-      "binding": "sink_kv",
+      "binding": "KV",
       "id": "989ffb684ca04f6e880acf8988ebbd23" // IMPORTANT: Change this to your KV namespace ID
     }
   ]
