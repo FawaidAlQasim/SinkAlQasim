@@ -52,7 +52,7 @@
     "vue3-simple-icons": "^13.2.0",
     "zod": "^3.25.20"
   },
-  "dev": {
+  "devDependencies": {
     "@anatine/zod-mock": "^3.14.0",
     "@antfu/eslint-config": "^4.13.2",
     "@cloudflare/vitest-pool-workers": "^0.8.33",
