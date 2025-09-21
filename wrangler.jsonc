@@ -12,6 +12,9 @@
   ],
   "keep_vars": true,
   "upload_source_maps": true,
+  "build": {
+    "command": "pnpm install --no-frozen-lockfile && pnpm run build"
+  },
   "ai": {
     "binding": "AI"
   },
@@ -24,7 +27,7 @@
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "989ffb684ca04f6e880acf8988ebbd23" // IMPORTANT: Change this to your KV namespace ID
+      "id": "989ffb684ca04f6e880acf8988ebbd23"
     }
   ]
 }
