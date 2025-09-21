@@ -80,7 +80,6 @@ function updateLinkList(link, type) {
         <div class="flex items-center gap-2">
           <DashboardLinksEditor @update:link="updateLinkList" />
           <DashboardLinksSort v-model:sort-by="sortBy" />
-          <DashboardLinksBulkUpload @update:link="updateLinkList" />
         </div>
       </DashboardNav>
       <LazyDashboardLinksSearch />
