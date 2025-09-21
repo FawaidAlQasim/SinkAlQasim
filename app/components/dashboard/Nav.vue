@@ -1,7 +1,6 @@
 <script setup>
 const route = useRoute()
 </script>
-
 <template>
   <section class="flex justify-between">
     <Tabs
@@ -20,6 +19,9 @@ const route = useRoute()
         </TabsTrigger>
         <TabsTrigger value="/dashboard/realtime">
           {{ $t('nav.realtime') }}
+        </TabsTrigger>
+        <TabsTrigger value="/dashboard/bulk-upload">
+          {{ $t('nav.bulk_upload') }}
         </TabsTrigger>
       </TabsList>
     </Tabs>
