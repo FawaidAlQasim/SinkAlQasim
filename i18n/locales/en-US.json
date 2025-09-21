@@ -51,7 +51,8 @@
   "nav": {
     "links": "Links",
     "analysis": "Analysis",
-    "realtime": "Realtime"
+    "realtime": "Realtime",
+    "bulk_upload": "Bulk Upload"
   },
   "home": {
     "features": {
