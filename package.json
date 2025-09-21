@@ -23,7 +23,7 @@
     "preview": "wrangler dev --var $(cat .env | sed 's/=/:/g')",
     "test": "vitest"
   },
-  "": {
+  "dependencies": {
     "@intlify/message-compiler": "^11.1.3",
     "@number-flow/vue": "^0.4.7",
     "@unovis/ts": "^1.5.1",
