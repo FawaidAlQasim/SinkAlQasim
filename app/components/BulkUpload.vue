@@ -172,7 +172,6 @@ https://google.com,search,Google Search,"
 </template>
 
 <script setup>
-import Papa from 'papaparse'
 
 // State management
 const csvData = ref('')
@@ -182,29 +181,37 @@ const results = ref([])
 const parsedData = ref([])
 const fileInput = ref(null)
 
-// Parse CSV with PapaParse
+// Parse CSV with native JavaScript (more reliable for build)
 const parseCSV = (csvText) => {
-  const result = Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-    dynamicTyping: false,
-    delimiter: ',',
-    quoteChar: '"',
-    transformHeader: (header) => header.toLowerCase().trim()
-  })
+  const lines = csvText.trim().split('\n')
+  if (lines.length === 0) return []
   
-  if (result.errors.length > 0) {
-    console.warn('CSV parsing warnings:', result.errors)
+  // Parse header row
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''))
+  
+  // Find column indices
+  const urlIndex = headers.findIndex(h => h.includes('url') || h === 'link')
+  const slugIndex = headers.findIndex(h => h.includes('slug') || h === 'short' || h === 'alias')
+  const titleIndex = headers.findIndex(h => h.includes('title') || h === 'name')
+  const expiresIndex = headers.findIndex(h => h.includes('expire') || h === 'expiration')
+  
+  if (urlIndex === -1) {
+    console.warn('No URL column found in CSV')
+    return []
   }
   
-  return result.data.map((row, index) => ({
-    id: index,
-    url: row.url || row.link || '',
-    slug: row.slug || row.short || row.alias || '',
-    title: row.title || row.name || '',
-    expires: row.expires || row.expiration || '',
-    status: 'pending'
-  })).filter(item => item.url)
+  // Parse data rows
+  return lines.slice(1).map((line, index) => {
+    const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+    return {
+      id: index,
+      url: values[urlIndex] || '',
+      slug: values[slugIndex] || '',
+      title: values[titleIndex] || '',
+      expires: values[expiresIndex] || '',
+      status: 'pending'
+    }
+  }).filter(item => item.url && item.url.startsWith('http'))
 }
 
 // Handle file upload
