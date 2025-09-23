@@ -241,18 +241,27 @@ const previewData = () => {
 
 // Process bulk upload
 const processBulkUpload = async () => {
+  if (!parsedData.value.length) return
+
   uploadState.value = 'uploading'
   results.value = []
 
   const links = parsedData.value
   const processedResults = []
 
+  // Retrieve token from cookie
+  const token = useCookie('siteToken').value
+
   for (let i = 0; i < links.length; i++) {
     const link = links[i]
     try {
-      const response = await $fetch('/api/link/create', {
+      const response = await $fetch('https://go.alqasim.com/api/link/create', {
         method: 'POST',
         credentials: 'include', // send cookies/session
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '', // send bearer token if exists
+          'Content-Type': 'application/json'
+        },
         body: {
           url: link.url,
           slug: link.slug || undefined,
@@ -275,9 +284,10 @@ const processBulkUpload = async () => {
       })
     }
 
+    // Update results reactively
     results.value = [...processedResults]
 
-    // Small delay to avoid spamming the API
+    // Small delay to avoid overwhelming the API
     await new Promise(resolve => setTimeout(resolve, 100))
   }
 
