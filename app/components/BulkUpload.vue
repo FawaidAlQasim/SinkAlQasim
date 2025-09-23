@@ -282,6 +282,7 @@ const processBulkUpload = async () => {
     try {
       const response = await fetch('https://go.alqasim.com/api/link/create', {
         method: 'POST',
+        credentials: 'include', // <-- THIS IS THE FIX
         headers: {
           // The Authorization header is removed because the browser will send
           // the HttpOnly cookie. Your server should be configured to read the
