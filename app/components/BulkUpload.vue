@@ -63,18 +63,16 @@ https://google.com,search,Google Search,"
 <div v-if="showPreview && uploadState === 'idle'" class="space-y-4">
   <div class="flex justify-between items-center">
     <h3 class="text-lg font-semibold">Preview ({{ parsedData.length }} links)</h3>
-    <button
-      @click="showPreview = false"
-      class="text-gray-500 hover:text-gray-700"
-    >
+    <button @click="showPreview = false" class="hover:text-gray-700">
       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </button>
   </div>
 
   <div class="max-h-60 overflow-y-auto border rounded-md">
-    <table class="w-full text-sm table-auto">
+    <table class="w-full text-sm table-auto border-collapse">
       <thead>
         <tr>
           <th class="px-3 py-2 text-left">URL</th>
@@ -84,11 +82,7 @@ https://google.com,search,Google Search,"
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="item in parsedData"
-          :key="item.id"
-          class="border-t odd:bg-transparent even:bg-transparent"
-        >
+        <tr v-for="item in parsedData" :key="item.id" class="border-t">
           <td class="px-3 py-2 truncate max-w-xs" :title="item.url">{{ item.url }}</td>
           <td class="px-3 py-2">{{ item.slug }}</td>
           <td class="px-3 py-2">{{ item.title }}</td>
@@ -99,37 +93,34 @@ https://google.com,search,Google Search,"
   </div>
 
   <div class="flex justify-end gap-3">
-    <button
-      @click="showPreview = false"
-      class="px-4 py-2 text-gray-600 hover:text-gray-800"
-    >
-      Back
-    </button>
-    <button
-      @click="processBulkUpload"
-      class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-    >
+    <button @click="showPreview = false" class="px-4 py-2 hover:text-gray-800">Back</button>
+    <button @click="processBulkUpload" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
       Upload {{ parsedData.length }} Links
     </button>
   </div>
 </div>
 
-    <!-- Upload Progress -->
-    <div v-if="uploadState === 'uploading'" class="space-y-4">
-      <h3 class="text-lg font-semibold">Uploading Links...</h3>
-      <div class="space-y-2">
-        <div v-for="(result, index) in results" :key="index" class="flex items-center gap-3 p-2 border rounded">
-          <svg v-if="result.status === 'success'" class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <svg v-if="result.status === 'error'" class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span class="flex-1 truncate">{{ result.url }}</span>
-          <span class="text-sm text-gray-500">{{ result.message }}</span>
-        </div>
-      </div>
+<!-- Upload Progress -->
+<div v-if="uploadState === 'uploading'" class="space-y-4">
+  <h3 class="text-lg font-semibold">Uploading Links...</h3>
+  <div class="space-y-2">
+    <div v-for="(result, index) in results" :key="index"
+      class="flex items-center gap-3 p-2 border rounded">
+      <svg v-if="result.status === 'success'" class="h-5 w-5 text-green-500" fill="none"
+        stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <svg v-if="result.status === 'error'" class="h-5 w-5 text-red-500" fill="none"
+        stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span class="flex-1 truncate">{{ result.url }}</span>
+      <span class="text-sm text-gray-500">{{ result.message }}</span>
     </div>
+  </div>
+</div>
 
     <!-- Results -->
     <div v-if="uploadState === 'completed'" class="space-y-4">
@@ -241,25 +232,33 @@ const previewData = () => {
 
 // Process bulk upload
 const processBulkUpload = async () => {
-  if (!parsedData.value.length) return
+  // Get token from cookie
+  const token = useCookie('siteToken').value;
 
-  uploadState.value = 'uploading'
-  results.value = []
+  if (!token) {
+    alert('You are not authenticated. Please log in to upload links.');
+    return;
+  }
 
-  const links = parsedData.value
-  const processedResults = []
+  if (parsedData.value.length === 0) {
+    alert('No links to upload. Please select or paste a CSV first.');
+    return;
+  }
 
-  // Retrieve token from cookie
-  const token = useCookie('siteToken').value
+  uploadState.value = 'uploading';
+  results.value = [];
 
-  for (let i = 0; i < links.length; i++) {
-    const link = links[i]
+  const processedResults = [];
+
+  for (let i = 0; i < parsedData.value.length; i++) {
+    const link = parsedData.value[i];
+
     try {
       const response = await $fetch('https://go.alqasim.com/api/link/create', {
         method: 'POST',
-        credentials: 'include', // send cookies/session
+        credentials: 'include', // send cookies/session if needed
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '', // send bearer token if exists
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: {
@@ -268,31 +267,41 @@ const processBulkUpload = async () => {
           title: link.title || undefined,
           expires: link.expires || undefined
         }
-      })
+      });
 
       processedResults.push({
         ...link,
         status: 'success',
         shortUrl: response.shortUrl || `https://sink.cool/${response.slug}`,
         message: 'Created successfully'
-      })
+      });
+
     } catch (error) {
+      let message = 'Failed to create';
+
+      // Detect Unauthorized error
+      if (error?.response?.status === 401) {
+        message = 'Unauthorized: Invalid or expired token';
+        alert('Upload failed: Your session has expired. Please log in again.');
+      } else if (error?.message) {
+        message = error.message;
+      }
+
       processedResults.push({
         ...link,
         status: 'error',
-        message: error?.data?.message || error.message || 'Failed to create'
-      })
+        message
+      });
     }
 
-    // Update results reactively
-    results.value = [...processedResults]
+    results.value = [...processedResults];
 
-    // Small delay to avoid overwhelming the API
-    await new Promise(resolve => setTimeout(resolve, 100))
+    // Small delay to avoid overwhelming API
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  uploadState.value = 'completed'
-}
+  uploadState.value = 'completed';
+};
 
 // Download template
 const downloadTemplate = () => {
