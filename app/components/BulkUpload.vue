@@ -260,14 +260,10 @@ const previewData = () => {
 
 const processBulkUpload = async () => {
   errorMessage.value = '';
-  
-  // FIXED: Use the reliable helper function to get the cookie
-  const token = getCookieByName('siteToken');
 
-  if (!token) {
-    errorMessage.value = 'Authentication failed. Please log out and log back in again.';
-    return;
-  }
+  // The HttpOnly cookie cannot be read by JavaScript, so we remove the
+  // manual token check. The browser will send the cookie automatically,
+  // and we will rely on the server's 401 response to handle auth errors.
 
   if (parsedData.value.length === 0) {
     errorMessage.value = 'No links to upload. Please select or paste a CSV first.';
@@ -287,7 +283,9 @@ const processBulkUpload = async () => {
       const response = await fetch('https://go.alqasim.com/api/link/create', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // The Authorization header is removed because the browser will send
+          // the HttpOnly cookie. Your server should be configured to read the
+          // token from the cookie, not this header.
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
