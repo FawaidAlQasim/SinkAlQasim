@@ -102,7 +102,7 @@ https://google.com,search,Google Search,"
           Back
         </button>
         <button
-          @click="processBulkUpload"
+          @click=""
           class="px-6 py-2 bg-green-600 text-white rounded-md hover:green-700"
         >
           Upload {{ parsedData.length }} Links
@@ -248,9 +248,7 @@ const processBulkUpload = async () => {
     try {
       const response = await $fetch('/api/link/create', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${useCookie('siteToken').value || 'SinkCool'}`
-        },
+          credentials: 'include', // <-- send cookies/session
         body: {
           url: link.url,
           slug: link.slug || undefined,
