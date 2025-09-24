@@ -216,7 +216,7 @@ const parseCSV = (csvText) => {
     h.includes('slug') || h === 'short' || h === 'alias' || h === 'custom'
   );
   const titleIndex = headers.findIndex(h => 
-    h.includes('title') || h === 'name' || h === 'description'
+    h.includes('title') || h === 'name' || h === 'description' || h.includes('comment')
   );
   const expiresIndex = headers.findIndex(h => 
     h.includes('expire') || h === 'expiration' || h.includes('date')
@@ -409,7 +409,7 @@ const processBulkUpload = async () => {
       const requestBody = {
         url: link.url,
         ...(link.slug && { slug: link.slug }),
-        ...(link.title && { title: link.title }),
+        ...(link.title && { comment: link.title }),
         ...(link.expires && { expires_at: link.expires })
       };
 
